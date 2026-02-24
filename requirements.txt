@@ -1,0 +1,11 @@
+pandas
+matplotlib
+numpy
+seaborn
+fastapi
+uvicorn
+sqlalchemy
+python-jose[cryptography]
+passlib[bcrypt]
+python-multipart
+openpyxl

@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Student Marks Analyzer | Dashboard</title>
+    <link rel="stylesheet" href="/static/style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <link rel='stylesheet' href='https://cdn-uicons.flaticon.com/2.1.0/uicons-regular-rounded/css/uicons-regular-rounded.css'>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+
+<body class="dark-theme">
+    <div id="app">
+        <!-- Login Section -->
+        <section id="login-section" class="glass-module">
+            <div class="login-header">
+                <h1>Welcome Back</h1>
+                <p>Login to access your dashboard</p>
+            </div>
+            <form id="login-form">
+                <div class="input-group">
+                    <label for="username">Username</label>
+                    <input type="text" id="username" placeholder="Name_RollNo or Admin_User" required>
+                </div>
+                <div class="input-group">
+                    <label for="password">Password</label>
+                    <input type="password" id="password" placeholder="••••••••" required>
+                </div>
+                <button type="submit" class="btn-primary">Sign In</button>
+            </form>
+            <div id="login-error" class="error-msg"></div>
+        </section>
+
+        <!-- Dashboard Section (Hidden by default) -->
+        <section id="dashboard-section" class="hidden">
+            <nav class="sidebar">
+                <div class="logo">SMA <span>v2.0</span></div>
+                <ul class="nav-links">
+                    <li class="active" data-view="overview"><i class="fi fi-rr-apps"></i> Overview</li>
+                    <li data-view="reports"><i class="fi fi-rr-chart-pie-alt"></i> Reports</li>
+                    <li data-view="data-table" class="admin-only hidden"><i class="fi fi-rr-folder"></i> Data Management</li>
+                </ul>
+                <div class="nav-footer">
+                    <div class="user-info">
+                        <span id="display-name">Loading...</span>
+                        <span id="display-role">Student</span>
+                    </div>
+                    <button id="logout-btn" class="btn-outline">Logout</button>
+                </div>
+            </nav>
+
+            <main class="content">
+                <header class="top-bar">
+                    <h2 id="view-title">Dashboard Overview</h2>
+                    <div class="actions" id="admin-actions">
+                        <button id="reload-btn" class="btn-icon" title="Reload Data"><i class="fi fi-rr-refresh"></i></button>
+                        <input type="file" id="upload-csv-input" accept=".csv,.xlsx" hidden>
+                        <button id="upload-btn" class="btn-primary-small">+ Upload File</button>
+                    </div>
+                </header>
+
+                <div id="view-container">
+                    <!-- Overview View (Admin & Student) -->
+                    <div id="overview-view" class="view">
+                        <!-- Student Personal Section (Hidden for Admin) -->
+                        <div id="student-info-bar" class="student-only hidden glass-module border-cyan">
+                            <div class="info-content">
+                                <div class="info-main">
+                                    <h2 id="stu-name">Student Name</h2>
+                                    <span class="badge" id="stu-id">Roll Number</span>
+                                </div>
+                                <div class="info-stats">
+                                    <div class="mini-stat">
+                                        <label>Your Score</label>
+                                        <strong id="stu-marks">0</strong>
+                                    </div>
+                                    <div class="mini-stat">
+                                        <label>Study Time</label>
+                                        <strong id="stu-time">0.0 hrs</strong>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="stats-grid">
+                            <div class="stat-card glass-module">
+                                <h3>Average Marks</h3>
+                                <p id="stat-avg-marks">0.0</p>
+                            </div>
+                            <div class="stat-card glass-module">
+                                <h3>Avg Study Time</h3>
+                                <p id="stat-avg-time">0.0 hrs</p>
+                            </div>
+                            <div class="stat-card glass-module destac-card">
+                                <h3>Highest Marks</h3>
+                                <p id="stat-highest">0.0</p>
+                            </div>
+                            <div class="stat-card glass-module danger-card">
+                                <h3>Least Marks</h3>
+                                <p id="stat-lowest">0.0</p>
+                            </div>
+                        </div>
+
+                        <div class="charts-container">
+                            <div class="chart-box glass-module">
+                                <h3>Marks Distribution (Live)</h3>
+                                <canvas id="histogramChart"></canvas>
+                            </div>
+                            <div class="chart-box glass-module">
+                                <h3>Performance Overview (Live)</h3>
+                                <canvas id="barChart"></canvas>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Reports View (Separate section for PNGs) -->
+                    <div id="reports-view" class="view hidden">
+                        <div class="reports-grid">
+                            <div class="report-card glass-module">
+                                <h3>Frequency Distribution Report</h3>
+                                <img id="histogram-img" src="" alt="Histogram" class="graph-img">
+                            </div>
+                            <div class="report-card glass-module">
+                                <h3>Class Performance Report</h3>
+                                <img id="bar-chart-img" src="" alt="Bar Chart" class="graph-img">
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Data Table View -->
+                    <div id="data-table-view" class="view hidden admin-only">
+                        <div class="table-container glass-module">
+                            <table id="marks-table">
+                                <thead>
+                                    <tr>
+                                        <th>Roll Number</th>
+                                        <th>Name</th>
+                                        <th>Marks</th>
+                                        <th>Study Time</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <!-- Populated by JS -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </main>
+        </section>
+    </div>
+
+    <!-- Edit Modal -->
+    <div id="edit-modal" class="modal hidden">
+        <div class="modal-content glass-module border-cyan">
+            <h3>Edit Student Record</h3>
+            <form id="edit-form">
+                <input type="hidden" id="edit-id">
+                <div class="input-group">
+                    <label>Name</label>
+                    <input type="text" id="edit-name">
+                </div>
+                <div class="input-group">
+                    <label>Marks</label>
+                    <input type="number" step="0.1" id="edit-marks">
+                </div>
+                <div class="input-group">
+                    <label>Study Time</label>
+                    <input type="number" step="0.1" id="edit-time">
+                </div>
+                <div class="form-actions">
+                    <button type="button" id="close-modal" class="btn-outline">Cancel</button>
+                    <button type="submit" class="btn-primary">Save Changes</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script src="/static/app.js"></script>
+</body>
+
+</html>

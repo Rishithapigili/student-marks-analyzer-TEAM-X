@@ -1,0 +1,22 @@
+Project Name: Student Marks Analyzer
+
+Description:
+A data analysis project that uses Pandas and Matplotlib to analyze student marks data.
+
+Dataset: Student_Marks.csv (100 records)
+
+Columns:
+- number_courses : Number of courses taken by the student
+- time_study     : Time spent studying (in hours)
+- Marks          : Marks obtained by the student
+
+Features:
+1. Load and display the dataset
+2. Calculate average marks, study time, and number of courses
+3. Identify the highest and lowest scoring students
+4. Generate a bar chart showing marks per student
+5. Generate a histogram showing the distribution of marks
+
+Libraries Used:
+- pandas   : Data loading and analysis
+- matplotlib : Data visualization (bar chart and histogram)

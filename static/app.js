@@ -1,6 +1,5 @@
 // Core App Logic
-const API_BASE = "http://127.0.0.1:8000";
-
+const BASE_URL = "https://student-marks-analyzer-fp4y.onrender.com";
 let barChart = null;
 let histChart = null;
 
@@ -39,13 +38,13 @@ async function verifySession() {
         const res = await fetch(`${API_BASE}/auth/me`, {
             headers: { 'Authorization': `Bearer ${state.token}` }
         });
-        
+
         if (res.ok) {
             const data = await res.json();
-            state.user = { 
-                username: data.username, 
-                role: data.role, 
-                marks_details: data.marks_details 
+            state.user = {
+                username: data.username,
+                role: data.role,
+                marks_details: data.marks_details
             };
             initDashboard();
         } else {
@@ -60,7 +59,7 @@ async function verifySession() {
 loginForm.addEventListener('submit', async (e) => {
     e.preventDefault();
     loginError.textContent = '';
-    
+
     const formData = new FormData();
     formData.append('username', document.getElementById('username').value);
     formData.append('password', document.getElementById('password').value);
@@ -103,7 +102,7 @@ function showLogin() {
 function initDashboard() {
     loginSection.classList.add('hidden');
     dashboardSection.classList.remove('hidden');
-    
+
     document.getElementById('display-name').textContent = state.user.username;
     document.getElementById('display-role').textContent = state.user.role;
 
@@ -151,10 +150,10 @@ navLinks.forEach(link => {
 function switchView(viewName) {
     navLinks.forEach(l => l.classList.remove('active'));
     document.querySelector(`[data-view="${viewName}"]`).classList.add('active');
-    
+
     views.forEach(v => v.classList.add('hidden'));
     document.getElementById(`${viewName}-view`).classList.remove('hidden');
-    
+
     document.getElementById('view-title').textContent = viewName.charAt(0).toUpperCase() + viewName.slice(1).replace('-', ' ');
 }
 
@@ -224,7 +223,7 @@ function showStudentView() {
 // --- Charts ---
 async function renderCharts() {
     if (!state.allData) return;
-    
+
     // Update Backend Images (Authenticated Fetch)
     const timestamp = new Date().getTime();
     fetchAuthenticatedImage(`${API_BASE}/marks/histogram?t=${timestamp}`, 'histogram-img');
@@ -255,8 +254,8 @@ async function renderCharts() {
     const bins = [0, 20, 40, 60, 80, 100];
     const binCounts = new Array(5).fill(0);
     marks.forEach(m => {
-        for(let i=0; i<5; i++) {
-            if (m >= bins[i] && m < bins[i+1]) { binCounts[i]++; break; }
+        for (let i = 0; i < 5; i++) {
+            if (m >= bins[i] && m < bins[i + 1]) { binCounts[i]++; break; }
         }
     });
 
@@ -344,7 +343,7 @@ document.getElementById('edit-form').addEventListener('submit', async (e) => {
 
     const res = await fetch(`${API_BASE}/marks/${id}`, {
         method: 'PATCH',
-        headers: { 
+        headers: {
             'Authorization': `Bearer ${state.token}`,
             'Content-Type': 'application/json'
         },
